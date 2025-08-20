@@ -1,0 +1,71 @@
+@echo off
+REM 批处理脚本 - 模拟Slurm任务数组 (简化版)
+REM 用于在Windows上测试任务划分逻辑
+
+setlocal enabledelayedexpansion
+
+set YEAR=2013
+set START_DOY=1
+set END_DOY=4
+set PYTHON_EXE=C:\Users\wuch\miniconda3\envs\wchShap\python.exe
+
+echo ========================================
+echo Slurm任务数组模拟测试 (批处理版)
+echo ========================================
+echo 年份: %YEAR%
+echo 日期范围: %START_DOY% - %END_DOY%
+echo Python路径: %PYTHON_EXE%
+echo ========================================
+
+set /a TOTAL_TASKS=%END_DOY%-%START_DOY%+1
+set /a COMPLETED=0
+set /a FAILED=0
+
+echo 创建了 %TOTAL_TASKS% 个任务
+
+REM 顺序执行每个任务（模拟单个任务）
+for /L %%i in (%START_DOY%,1,%END_DOY%) do (
+    set /a TASK_ID=%%i-1
+    set DOY=%%i
+    
+    echo.
+    echo 启动任务: 日期 %YEAR%%%i ^(TaskID: !TASK_ID!^)
+    echo ----------------------------------------
+    
+    REM 设置模拟的Slurm环境变量
+    set SLURM_ARRAY_TASK_ID=!TASK_ID!
+    set PROCESS_YEAR=%YEAR%
+    
+    REM 执行Python脚本
+    "%PYTHON_EXE%" process_single_date.py --task-id !TASK_ID! --year %YEAR%
+    
+    REM 检查退出代码
+    if !ERRORLEVEL! EQU 0 (
+        echo 任务 !TASK_ID! ^(年份 %YEAR%^) 成功完成
+        set /a COMPLETED+=1
+    ) else (
+        echo 任务 !TASK_ID! ^(年份 %YEAR%^) 执行失败
+        set /a FAILED+=1
+    )
+    
+    echo ----------------------------------------
+)
+
+echo.
+echo ========================================
+echo 执行完成统计:
+echo   总任务数: %TOTAL_TASKS%
+echo   成功完成: %COMPLETED%
+echo   执行失败: %FAILED%
+set /a SUCCESS_RATE=%COMPLETED%*100/%TOTAL_TASKS%
+echo   成功率: %SUCCESS_RATE%%%
+echo ========================================
+
+REM 检查日志文件
+if exist "output\logs" (
+    echo.
+    echo 生成的日志文件:
+    dir /b "output\logs\contrail_*.log" 2>nul
+)
+
+pause

@@ -251,8 +251,16 @@ def process_contrail_data(mod03_dir, rgb_dir, date, resolution, output_dir, thre
 
 
 def find_rgb_files(rgb_dir, date):
-    """查找指定日期的RGB文件"""
-    pattern = os.path.join(rgb_dir, f"*{date}*RGB*.png")
+    """查找指定日期的RGB文件
+    
+    参数:
+        rgb_dir: RGB文件目录
+        date: 日期字符串，格式为YYYYDDD，例如2013001
+        
+    文件名格式：MOD021KM.AYYYYDDD.HHMM.VVV.YYYYDDDHHMMSS_RGB_denoised.png
+    """
+    # 使用严格的位置匹配
+    pattern = os.path.join(rgb_dir, f"MOD021KM.A{date}.[0-9][0-9][0-9][0-9].[0-9][0-9][0-9].*_RGB*.png")
     return glob.glob(pattern)
 
 
