@@ -1,0 +1,5 @@
+# MOD03 HDF文件栅格统计所需的Python包
+numpy>=1.19.0
+matplotlib>=3.3.0
+pyhdf>=0.10.0
+tqdm>=4.62.0
