@@ -7,8 +7,13 @@ from line_segment_processor import process_image_for_lines
 # 配置参数
 INPUT_FOLDER = r"C:\Users\wuch\Desktop\航迹论文\去除短线\原始数据"
 OUTPUT_FOLDER = r"C:\Users\wuch\Desktop\航迹论文\去除短线\输出结果"
-THRESHOLD_VALUE = 0.35
-MIN_PIXEL_LENGTH = 50
+THRESHOLD_VALUE = 0.5
+MIN_PIXEL_LENGTH = 100
+
+# 线段合并参数
+MERGE_LINES = False  # 是否启用线段合并
+MERGE_DISTANCE_THRESHOLD = 30  # 合并距离阈值（像素）
+MERGE_ANGLE_THRESHOLD = 2  # 合并角度阈值（度）
 
 def setup_logging(output_folder):
     """设置日志功能"""
@@ -34,6 +39,10 @@ def setup_logging(output_folder):
     logger.info(f"输出文件夹: {OUTPUT_FOLDER}")
     logger.info(f"二值化阈值: {THRESHOLD_VALUE}")
     logger.info(f"最小线段长度: {MIN_PIXEL_LENGTH} 像素")
+    logger.info(f"线段合并: {'启用' if MERGE_LINES else '禁用'}")
+    if MERGE_LINES:
+        logger.info(f"合并距离阈值: {MERGE_DISTANCE_THRESHOLD} 像素")
+        logger.info(f"合并角度阈值: {MERGE_ANGLE_THRESHOLD} 度")
     logger.info(f"日志文件: {log_path}")
     logger.info("=" * 60)
     
@@ -64,7 +73,10 @@ def main():
                 input_image_path=image_path,
                 threshold_value=THRESHOLD_VALUE,
                 min_pixel_length=MIN_PIXEL_LENGTH,
-                output_folder_path=OUTPUT_FOLDER
+                output_folder_path=OUTPUT_FOLDER,
+                enable_merge=MERGE_LINES,
+                merge_distance_threshold=MERGE_DISTANCE_THRESHOLD,
+                merge_angle_threshold=MERGE_ANGLE_THRESHOLD
             )
             successful_count += 1
             logger.info(f"✅ 成功处理: {filename}")
